@@ -12,6 +12,9 @@ variable "vpc_cidr"{
 #     description = "Default Terraform VPC module version"
 # }
 
+variable "kubernetes_version"{
+    default = "1.33"
+}
 variable "cluster_name"{
     default = "eks-cluster"
 }
