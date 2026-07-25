@@ -15,7 +15,8 @@ module "eks" {
 
   eks_managed_node_groups = {
     node_group = {
-      ami_type               = "AL2_x86_64"
+    #   ami_type               = "AL2_x86_64" 
+    # Starting on 1.30, AL2023 is the default AMI type for EKS managed node groups
       instance_types         = ["t3.medium"]  
       min_size     = 2
       max_size     = 3
