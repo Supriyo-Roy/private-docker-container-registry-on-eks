@@ -7,10 +7,10 @@ variable "vpc_cidr"{
     description = "Default CIDR range of the VPC"
 }
 
-variable "vpc_module_version"{
-    default = 6.6.1
-    description = "Default Terraform VPC module version"
-}
+# variable "vpc_module_version"{
+#     default = 6.6.1
+#     description = "Default Terraform VPC module version"
+# }
 
 variable "cluster_name"{
     default = "eks-cluster"
