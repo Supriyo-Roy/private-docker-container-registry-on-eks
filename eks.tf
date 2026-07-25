@@ -15,11 +15,11 @@ module "eks" {
 
   eks_managed_node_groups = {
     node_group = {
-    #   ami_type               = "AL2_x86_64" 
-    # Starting on 1.30, AL2023 is the default AMI type for EKS managed node groups
-    instance_types = ["t3.micro"]
-    capacity_type = "ON_DEMAND"   
-    min_size     = 2   
+      #   ami_type               = "AL2_x86_64" 
+      # Starting on 1.30, AL2023 is the default AMI type for EKS managed node groups
+      instance_types = ["t3.medium"]
+      capacity_type = "ON_DEMAND"   
+      min_size     = 2   
       max_size     = 3
       desired_size = 2
       vpc_security_group_ids = [aws_security_group.all_worker_mgmt.id]
