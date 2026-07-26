@@ -19,6 +19,26 @@ resource "aws_iam_role" "bastion_ssm" {
   })
 }
 
+# Policy allowing the Bastion host to query EKS cluster metadata
+resource "aws_iam_role_policy" "bastion_eks_describe" {
+  name = "bastion-eks-describe-policy"
+  role = aws_iam_role.bastion_ssm.name
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "eks:DescribeCluster",
+          "eks:ListClusters"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
 # Attach the managed SSM policy required for Session Manager agent
 resource "aws_iam_role_policy_attachment" "bastion_ssm_attach" {
   role       = aws_iam_role.bastion_ssm.name
