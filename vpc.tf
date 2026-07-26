@@ -1,6 +1,5 @@
 #Get me only the standard, core AWS Availability Zones in this region that work out of the box without extra account-level setup. Ignore all Local Zones, Wavelength Zones, or special edge zones.
 
-------------------------------------------------------------
 data "aws_availability_zones" "available" {
   filter {
     name   = "opt-in-status"
