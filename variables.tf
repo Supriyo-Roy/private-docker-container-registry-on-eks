@@ -7,11 +7,6 @@ variable "vpc_cidr"{
     description = "Default CIDR range of the VPC"
 }
 
-# variable "vpc_module_version"{
-#     default = 6.6.1
-#     description = "Default Terraform VPC module version"
-# }
-
 variable "kubernetes_version"{
     default = "1.33"
 }
@@ -22,3 +17,6 @@ variable "cluster_name"{
 variable "aws_region"{
     default = "eu-west-1"
 }
+
+variable "instance_type"{
+default = "t3.medium"}
