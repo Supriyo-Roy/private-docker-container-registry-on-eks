@@ -28,6 +28,7 @@ module "eks" {
       type                      = "ingress"
       source_security_group_id  = aws_security_group.bastion_sg.id
     }
+    }
 
   eks_managed_node_groups = {
     example = {
