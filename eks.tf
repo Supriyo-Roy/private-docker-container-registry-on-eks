@@ -19,6 +19,15 @@ module "eks" {
     #Why before_compute = true? Ensures the VPC CNI plugin is installed and ready before worker nodes register with the control plane. Without this, worker nodes spin up but fail to reach a Ready state because no networking driver is available to assign IPs to pods.
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
+  cluster_security_group_additional_rules = {
+    ingress_bastion_allow = {
+      description               = "Allow Bastion host to reach EKS API"
+      protocol                  = "tcp"
+      from_port                 = 443
+      to_port                   = 443
+      type                      = "ingress"
+      source_security_group_id  = aws_security_group.bastion_sg.id
+    }
 
   eks_managed_node_groups = {
     example = {
