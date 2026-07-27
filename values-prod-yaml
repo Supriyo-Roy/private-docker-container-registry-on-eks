@@ -1,0 +1,69 @@
+# === EKS specific - disable control plane scrapers ===
+kubeEtcd:
+  enabled: false
+kubeControllerManager:
+  enabled: false
+kubeScheduler:
+  enabled: false
+
+# === Prometheus ===
+prometheus:
+  prometheusSpec:
+    retention: 15d                    # adjust as needed
+    retentionSize: "45GB"             # safety net
+    replicas: 1                       # set to 2 + podAntiAffinity for HA
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: gp3
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 50Gi           # size according to your cardinality
+    resources:
+      requests:
+        cpu: 500m
+        memory: 2Gi
+      limits:
+        memory: 4Gi
+    # Optional but useful
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+
+# === Alertmanager ===
+alertmanager:
+  alertmanagerSpec:
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: gp3
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 10Gi
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        memory: 256Mi
+
+# === Grafana ===
+grafana:
+  adminPassword: "CHANGE-ME-TO-STRONG-PASSWORD"   # or use existingSecret
+  persistence:
+    enabled: true
+    storageClassName: gp3
+    size: 10Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      memory: 512Mi
+
+# Optional: Node exporter tolerations if you have tainted nodes
+prometheus-node-exporter:
+  tolerations:
+    - operator: Exists
