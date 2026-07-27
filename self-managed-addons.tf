@@ -61,6 +61,7 @@ resource "aws_eks_addon" "ebs_csi_driver" {
   cluster_name = module.eks.cluster_name
   addon_name   = "aws-ebs-csi-driver"
    depends_on = [
+    module.eks,
     aws_iam_role_policy_attachment.ebs_csi_driver,
     aws_eks_pod_identity_association.ebs_csi_driver
 ] 
