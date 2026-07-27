@@ -51,7 +51,7 @@ alertmanager:
 
 # === Grafana ===
 grafana:
-  adminPassword: "CHANGE-ME-TO-STRONG-PASSWORD"   # or use existingSecret
+  adminPassword: "admin"   # or use existingSecret
   persistence:
     enabled: true
     storageClassName: gp3
