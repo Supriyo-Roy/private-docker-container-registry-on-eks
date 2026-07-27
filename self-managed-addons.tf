@@ -51,6 +51,7 @@
       Environment = var.environment
       Terraform   = "true"
     }
+    depends_on = [ module.eks ]
   }
 
   ####################################################################################
@@ -74,7 +75,7 @@
   }
 
   # Fetch the official AWS Load Balancer Controller IAM policy document
-  
+
   data "http" "lbc_iam_policy" {
     url = "https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/main/docs/install/iam_policy.json"
   }
@@ -119,6 +120,7 @@
     namespace       = "kube-system"
     service_account = "aws-load-balancer-controller"
     role_arn        = aws_iam_role.lbc.arn
+    depends_on = [ module.eks ]
   }
 
 
