@@ -15,9 +15,9 @@ module "eks" {
     vpc-cni = {
       before_compute = true
     }
-    aws-efs-csi-driver = {
-      before_compute = true
-    }
+    # aws-efs-csi-driver = {
+    #   before_compute = true
+    # }
   }
     #Why before_compute = true? Ensures the VPC CNI plugin is installed and ready before worker nodes register with the control plane. Without this, worker nodes spin up but fail to reach a Ready state because no networking driver is available to assign IPs to pods.
   vpc_id     = module.vpc.vpc_id
@@ -82,26 +82,26 @@ module "eks" {
 #   }
 # }
 
-resource "aws_iam_role" "efs_csi" {
-  name = "AmazonEKS_EFS_CSI_DriverRole"
+# resource "aws_iam_role" "efs_csi" {
+#   name = "AmazonEKS_EFS_CSI_DriverRole"
 
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect = "Allow"
-      Principal = {
-        Service = "pods.eks.amazonaws.com"
-      }
-      Action = [
-        "sts:AssumeRole",
-        "sts:TagSession"
-      ]
-    }]
-  })
-}
+#   assume_role_policy = jsonencode({
+#     Version = "2012-10-17"
+#     Statement = [{
+#       Effect = "Allow"
+#       Principal = {
+#         Service = "pods.eks.amazonaws.com"
+#       }
+#       Action = [
+#         "sts:AssumeRole",
+#         "sts:TagSession"
+#       ]
+#     }]
+#   })
+# }
 
-resource "aws_iam_role_policy_attachment" "efs_csi" {
-  role       = aws_iam_role.efs_csi.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEFSCSIDriverPolicy"
-}
+# resource "aws_iam_role_policy_attachment" "efs_csi" {
+#   role       = aws_iam_role.efs_csi.name
+#   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEFSCSIDriverPolicy"
+# }
 
