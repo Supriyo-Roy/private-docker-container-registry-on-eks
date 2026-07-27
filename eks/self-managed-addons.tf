@@ -3,7 +3,7 @@ data "http" "lb_controller_iam_policy" {
   url = "https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/main/docs/install/iam_policy.json"
 }
 
-# 2. Declare the missing policy resource
+# 2. Declare the policy resource
 resource "aws_iam_policy" "lb_controller" {
   name        = "AWSLoadBalancerControllerIAMPolicy"
   path        = "/"
