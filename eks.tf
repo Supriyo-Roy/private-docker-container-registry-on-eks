@@ -45,7 +45,7 @@ module "eks" {
             type = "cluster"
           }
         }
-      }}
+      }}}
 
   eks_managed_node_groups = {
     example = {
@@ -63,7 +63,7 @@ module "eks" {
     cluster = var.cluster_name
   }
 }
-}
+
 # Creating access entry for bastion 
 
 # resource "aws_eks_access_entry" "bastion" {
