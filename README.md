@@ -51,3 +51,92 @@ kubectl top nodes
 kubectl top pods
 Horizontal Pod Autoscaler (HPA)
 Vertical Pod Autoscaler (VPA)
+
+
+kube-prometheus-stack is the standard way to run full Kubernetes monitoring on an EKS cluster. It is a single Helm chart (from the prometheus-community) that installs a complete, production-ready monitoring stack using the Prometheus Operator pattern.
+
+                    kube-prometheus-stack
+┌────────────────────────────────────────────────────┐
+│                                                    │
+│  Prometheus          ← Metrics Database            │
+│  Grafana             ← Dashboards                  │
+│  Alertmanager        ← Alerts                      │
+│  Node Exporter       ← Node Metrics                │
+│  kube-state-metrics  ← Kubernetes Object Metrics   │
+│  Prometheus Operator ← Manages Prometheus          │
+│                                                    │
+└────────────────────────────────────────────────────┘
+
+1. Prometheus
+
+This is the heart of monitoring.
+
+It continuously scrapes metrics from:
+
+kubelet
+Metrics Server
+kube-state-metrics
+Node Exporter
+CoreDNS
+kube-proxy
+VPC CNI
+your applications
+
+Grafana does not collect metrics.
+
+It simply asks Prometheus:
+
+rate(container_cpu_usage_seconds_total[5m])
+
+and draws beautiful dashboards.
+
+3. Node Exporter
+
+Node Exporter runs on every node.
+
+It exposes Linux metrics:
+
+CPU
+Memory
+Filesystem
+Network
+Disk
+Load Average
+Kernel statistics
+
+Without Node Exporter, Prometheus knows almost nothing about your EC2 instances.
+
+5. Alertmanager
+
+Prometheus detects problems.
+
+Alertmanager decides:
+
+Send Slack message
+Send Email
+Send PagerDuty
+Send Teams
+Group alerts
+Silence alerts
+
+6. Prometheus Operator
+
+This manages Prometheus itself.
+
+Instead of editing huge configuration files, you create Kubernetes resources like:
+
+ServiceMonitor
+
+PodMonitor
+
+PrometheusRule
+
+The operator converts them into Prometheus configuration automatically.
+
+kubectl port-forward -n monitoring svc/kube-prom-stack-grafana 3000:80
+
+aws ssm start-session \
+    --target <INSTANCE_ID> \
+    --document-name AWS-StartPortForwardingSession \
+    --parameters '{"portNumber":["3000"],"localPortNumber":["3000"]}'
+    

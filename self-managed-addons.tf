@@ -72,3 +72,89 @@ resource "aws_eks_addon" "ebs_csi_driver" {
     Terraform   = "true"
   }
 }
+
+
+
+# Fetch the official AWS Load Balancer Controller IAM policy document
+data "http" "lbc_iam_policy" {
+  url = "https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/main/docs/install/iam_policy.json"
+}
+
+resource "aws_iam_policy" "lbc" {
+  name        = "AWSLoadBalancerControllerIAMPolicy"
+  path        = "/"
+  description = "IAM policy for AWS Load Balancer Controller on EKS"
+  policy      = data.http.lbc_iam_policy.response_body
+}
+
+# Trust policy for EKS Pod Identity
+data "aws_iam_policy_document" "lbc_trust" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["pods.eks.amazonaws.com"]
+    }
+
+    actions = [
+      "sts:AssumeRole",
+      "sts:TagSession"
+    ]
+  }
+}
+
+resource "aws_iam_role" "lbc" {
+  name               = "${var.cluster_name}-aws-lbc-pod-identity"
+  assume_role_policy = data.aws_iam_policy_document.lbc_trust.json
+}
+
+resource "aws_iam_role_policy_attachment" "lbc" {
+  policy_arn = aws_iam_policy.lbc.arn
+  role       = aws_iam_role.lbc.name
+}
+
+
+resource "aws_eks_pod_identity_association" "lbc" {
+  cluster_name    = var.cluster_name
+  namespace       = "kube-system"
+  service_account = "aws-load-balancer-controller"
+  role_arn        = aws_iam_role.lbc.arn
+}
+
+
+resource "helm_release" "aws_lbc" {
+  name       = "aws-load-balancer-controller"
+  repository = "https://aws.github.io/eks-charts"
+  chart      = "aws-load-balancer-controller"
+  namespace  = "kube-system"
+  version    = "1.14.0" # Use the target chart version aligned with your environment
+
+  set {
+    name  = "clusterName"
+    value = var.cluster_name
+  }
+
+  set {
+    name  = "serviceAccount.create"
+    value = "true"
+  }
+
+  set {
+    name  = "serviceAccount.name"
+    value = "aws-load-balancer-controller"
+  }
+
+  set {
+    name  = "region"
+    value = var.aws_region
+  }
+
+  set {
+    name  = "vpcId"
+    value = data.aws_vpc.selected.id
+  }
+  
+  # Ensure Pod Identity mapping infrastructure is live before installing helm chart
+  depends_on = [aws_eks_pod_identity_association.lbc]
+}
