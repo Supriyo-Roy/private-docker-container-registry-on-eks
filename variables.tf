@@ -21,3 +21,8 @@ variable "aws_region"{
 variable "instance_type"{
 default = "t3.medium"
 }
+
+variable "environment" {
+    default = "dev"
+  
+}

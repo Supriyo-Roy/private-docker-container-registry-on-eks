@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana
+  namespace: monitoring
+  annotations:
+    kubernetes.io/ingress.class: alb
+
+    # Internet-facing ALB
+    alb.ingress.kubernetes.io/scheme: internet-facing
+
+    # Target Pods directly
+    alb.ingress.kubernetes.io/target-type: ip
+
+    # Listen on HTTP
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]'
+
+    # Health Check
+    alb.ingress.kubernetes.io/healthcheck-path: /login
+
+    # Optional
+    alb.ingress.kubernetes.io/success-codes: "200"
+
+spec:
+  ingressClassName: alb
+
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: kube-prom-stack-grafana
+                port:
+                  number: 80
